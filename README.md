@@ -1,92 +1,93 @@
-# Bitrise Step Dependency Check
+# Dependency Check
+
+Statically analyses a codebase and its dependencies for potential security vulnerabilities
 
 
+## How to use this Step
 
-## Getting started
+Can be run directly with the [bitrise CLI](https://github.com/bitrise-io/bitrise),
+just `git clone` this repository, `cd` into it's folder in your Terminal/Command Line
+and call `bitrise run test`.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+*Check the `bitrise.yml` file for required inputs which have to be
+added to your `.bitrise.secrets.yml` file!*
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Step by step:
 
-## Add your files
+1. Open up your Terminal / Command Line
+2. `git clone` the repository
+3. `cd` into the directory of the step (the one you just `git clone`d)
+5. Create a `.bitrise.secrets.yml` file in the same directory of `bitrise.yml`
+   (the `.bitrise.secrets.yml` is a git ignored file, you can store your secrets in it)
+6. Check the `bitrise.yml` file for any secret you should set in `.bitrise.secrets.yml`
+  * Best practice is to mark these options with something like `# define these in your .bitrise.secrets.yml`, in the `app:envs` section.
+7. Once you have all the required secret parameters in your `.bitrise.secrets.yml` you can just run this step with the [bitrise CLI](https://github.com/bitrise-io/bitrise): `bitrise run test`
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+An example `.bitrise.secrets.yml` file:
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/connor13/bitrise-step-dependency-check.git
-git branch -M main
-git push -uf origin main
+envs:
+- A_SECRET_PARAM_ONE: the value for secret one
+- A_SECRET_PARAM_TWO: the value for secret two
 ```
 
-## Integrate with your tools
+## How to create your own step
 
-- [ ] [Set up project integrations](https://gitlab.com/connor13/bitrise-step-dependency-check/-/settings/integrations)
+1. Create a new git repository for your step (**don't fork** the *step template*, create a *new* repository)
+2. Copy the [step template](https://github.com/bitrise-steplib/step-template) files into your repository
+3. Fill the `step.sh` with your functionality
+4. Wire out your inputs to `step.yml` (`inputs` section)
+5. Fill out the other parts of the `step.yml` too
+6. Provide test values for the inputs in the `bitrise.yml`
+7. Run your step with `bitrise run test` - if it works, you're ready
 
-## Collaborate with your team
+__For Step development guidelines & best practices__ check this documentation: [https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md](https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md).
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+**NOTE:**
 
-## Test and Deploy
+If you want to use your step in your project's `bitrise.yml`:
 
-Use the built-in continuous integration in GitLab.
+1. git push the step into it's repository
+2. reference it in your `bitrise.yml` with the `git::PUBLIC-GIT-CLONE-URL@BRANCH` step reference style:
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+```
+- git::https://github.com/user/my-step.git@branch:
+   title: My step
+   inputs:
+   - my_input_1: "my value 1"
+   - my_input_2: "my value 2"
+```
 
-***
+You can find more examples of step reference styles
+in the [bitrise CLI repository](https://github.com/bitrise-io/bitrise/blob/master/_examples/tutorials/steps-and-workflows/bitrise.yml#L65).
 
-# Editing this README
+## How to contribute to this Step
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
+1. Fork this repository
+2. `git clone` it
+3. Create a branch you'll work on
+4. To use/test the step just follow the **How to use this Step** section
+5. Do the changes you want to
+6. Run/test the step before sending your contribution
+  * You can also test the step in your `bitrise` project, either on your Mac or on [bitrise.io](https://www.bitrise.io)
+  * You just have to replace the step ID in your project's `bitrise.yml` with either a relative path, or with a git URL format
+  * (relative) path format: instead of `- original-step-id:` use `- path::./relative/path/of/script/on/your/Mac:`
+  * direct git URL format: instead of `- original-step-id:` use `- git::https://github.com/user/step.git@branch:`
+  * You can find more example of alternative step referencing at: https://github.com/bitrise-io/bitrise/blob/master/_examples/tutorials/steps-and-workflows/bitrise.yml
+7. Once you're done just commit your changes & create a Pull Request
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
 
-## Name
-Choose a self-explaining name for your project.
+## Share your own Step
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+You can share your Step or step version with the [bitrise CLI](https://github.com/bitrise-io/bitrise). If you use the `bitrise.yml` included in this repository, all you have to do is:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+1. In your Terminal / Command Line `cd` into this directory (where the `bitrise.yml` of the step is located)
+1. Run: `bitrise run test` to test the step
+1. Run: `bitrise run audit-this-step` to audit the `step.yml`
+1. Check the `share-this-step` workflow in the `bitrise.yml`, and fill out the
+   `envs` if you haven't done so already (don't forget to bump the version number if this is an update
+   of your step!)
+1. Then run: `bitrise run share-this-step` to share the step (version) you specified in the `envs`
+1. Send the Pull Request, as described in the logs of `bitrise run share-this-step`
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+That's all ;)
