@@ -64,20 +64,31 @@ type_tags:
 toolkit:
   go:
     package_name: gitlab.com/connor13/bitrise-step-dependency-check
+  # bash:
+  #   entry_file: step.sh
 
+deps:
+  brew:
+    - name: dependency-check
 
 inputs:
-  - example_step_input: Default Value - you can leave this empty if you want to
+  - data_path: 
     opts:
-      title: "Example Step Input"
-      summary: Summary. No more than 2-3 sentences.
+      title: "Database path"
+      summary: A path to where all the downloaded vulnerability databases are stored
       description: |
         Description of this input.
 
         Can be Markdown formatted text.
       is_expand: true
+      is_required: false
+  - project_name:
+    opts:
+      title: "Project Name"
+  - scan_path:
+    opts:
+      title: "Scan Path"
       is_required: true
-      value_options: []
 
 outputs:
   - EXAMPLE_STEP_OUTPUT:

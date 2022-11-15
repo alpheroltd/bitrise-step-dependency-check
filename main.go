@@ -4,9 +4,60 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	
+	"github.com/bitrise-io/go-steputils/v2/stepconf"
 )
 
+// Config ...
+type Config struct {
+	DataPath    	string   `env:"data_path,dir"`
+	ProjectName 	string   `env:"project_name"`
+	ScanPath 		string   `env:"scan_path,required"`
+}
+
+// type argmapping struct {
+
+// 	bitriseName string
+// 	valueMapper func (string) string	 // maps the bitrise value to a piece of the command
+
+// }
+
+type CommandMapper func (string) string
+
 func main() {
+
+	var config Config
+	if err := stepconf.Parse(&config); err != nil {
+		log.Errorf("Configuration error: %s\n", err)
+		os.Exit(7)
+	}
+	stepconf.Print(config)
+
+	argsMap := map[string]CommandMapper{
+		Config.DataPath: func (in string) string { 
+			return fmt.Sprintf(" --data %s", in)
+		},
+		Config.ProjectName: func (in string) string { 
+			return fmt.Sprintf(" --project %s", in)
+		},
+		Config.ScanPath: func (in string) string { 
+			return fmt.Sprintf(" --scan %s", in)
+		},
+	}
+
+	commandArgs := []string { 
+		"dependency-check",
+	}
+
+	// for _, argmapping := range argsMap {
+	// 	mappedValue := argmapping.valueMapper("some value")
+	// 	if mappedValue != nil {
+	// 		append(commandArgs, mappedValue)
+	// 	}
+	// }
+
+	fmt.Println(commandArgs)
+
 	fmt.Println("This is the value specified for the input 'example_step_input':", os.Getenv("example_step_input"))
 
 	//
