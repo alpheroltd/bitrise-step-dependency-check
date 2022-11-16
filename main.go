@@ -42,7 +42,7 @@ var validReportFormats []string = []string{
 
 // Config ...
 type Config struct {
-	Debug bool `env:"debug,opt[yes,no,true,false]"`
+	Debug bool `env:"debug,opt[yes,no]"`
 
 	OutputDirectory string `env:"output_path"`
 	ProjectName     string `env:"project_name"`
