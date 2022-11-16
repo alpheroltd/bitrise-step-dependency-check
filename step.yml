@@ -72,7 +72,29 @@ deps:
     - name: dependency-check
 
 inputs:
-  - data_path: 
+  - output_path: .
+    opts:
+      title: A path to write the reports
+      is_required: true
+  - debug: no
+    opts:
+      category: Debug
+      title: Enable verbose logging
+      summary: If this input is set, the Step will print additional logs for debugging.
+      is_required: true
+      value_options:
+      - "yes"
+      - "no"
+  - cache_database: yes
+    opts:
+      title: Cache vulnerabilty record?
+      summary: If enabled, this step will automatically cache the downloaded vulnerability databases.
+               This can greatly increase step performance as it can skip downloading in most cases.
+      is_required: true
+      value_options:
+      - "yes"
+      - "no"
+  - data_path: /tmp/dependancy-check-cache
     opts:
       title: "Database path"
       summary: A path to where all the downloaded vulnerability databases are stored
@@ -81,21 +103,49 @@ inputs:
 
         Can be Markdown formatted text.
       is_expand: true
+      is_dont_change_value: true
       is_required: false
   - project_name:
     opts:
       title: "Project Name"
-  - scan_path:
+  - scan_path: .
     opts:
       title: "Scan Path"
       is_required: true
+  - suppression_file:
+    opts:
+      title: Suppression File
+      summary: A path to any suppression file
+  - report_formats: "HTML"
+    opts:
+      title: Report formats
+      summary: A '|' separated list of valid dependancy check report formats. "HTML" by default
+  - extra_args:
+    opts:
+      title: Define any more commands you would like to pass to the dependency check tool
 
 outputs:
-  - EXAMPLE_STEP_OUTPUT:
+  - DEPENDENCY_CHECK_HTML_REPORT_PATH:
     opts:
-      title: "Example Step Output"
-      summary: Summary. No more than 2-3 sentences.
-      description: |
-        Description of this output.
-
-        Can be Markdown formatted text.
+      title: HTML report
+      summary: Path to the generated HTML report
+  - DEPENDENCY_CHECK_XML_REPORT_PATH:
+    opts:
+      title: XML report
+      summary: Path to the generated XML report
+  - DEPENDENCY_CHECK_CSV_REPORT_PATH:
+    opts:
+      title: CSV report
+      summary: Path to the generated CSV report
+  - DEPENDENCY_CHECK_JSON_REPORT_PATH:
+    opts:
+      title: JSON report
+      summary: Path to the generated JSON report
+  - DEPENDENCY_CHECK_JUNIT_REPORT_PATH:
+    opts:
+      title: JUnit report
+      summary: Path to the generated JUnit report
+  - DEPENDENCY_CHECK_SARIF_REPORT_PATH:
+    opts:
+      title: SARIF report
+      summary: Path to the generated SARIF report
