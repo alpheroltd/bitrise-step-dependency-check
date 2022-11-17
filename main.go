@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/exp/slices"
 
@@ -42,7 +43,7 @@ var validReportFormats []string = []string{
 
 // Config ...
 type Config struct {
-	Debug bool `env:"debug,opt[yes,no]"`
+	Debug bool `env:"debug"`
 
 	OutputDirectory string `env:"output_path"`
 	ProjectName     string `env:"project_name"`
@@ -116,6 +117,13 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 	dpArgs.addArg("--project", config.ProjectName)
 	dpArgs.addArg("--scan", config.ScanPath)
 
+	dataPath, err := filepath.Abs(config.VulnDatabasePath)
+	if err == nil {
+		dpArgs.addArg("--data", dataPath)
+	} else {
+		step.logger.Errorf("Could not locate path to persist the vulnerability database. Error: %s", err)
+	}
+
 	var outputDir string
 	if config.OutputDirectory != "" {
 		if filepath.IsAbs(config.OutputDirectory) {
@@ -153,7 +161,10 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 
 	//.SetStdout(os.Stdout).SetStderr(os.Stderr)
 	cmd := step.commandFactory.Create("dependency-check", dpArgs.args, &cmdOpts)
-	err := cmd.Run()
+
+	step.logger.Infof("dependency-check %s", strings.Join(dpArgs.args, " "))
+
+	err = cmd.Run()
 
 	if err != nil {
 		step.logger.Errorf("Failed to expose output with envman, error: %#v", err)

@@ -25,7 +25,7 @@ workflows:
         - data_path: dependency-check-db-cache
         - project_name: Bitrise Step Dependency Check
         - scan_path: .
-        - debug: true
+        - debug: yes
         - output_path: reports
   share-this-step:
     description: |-

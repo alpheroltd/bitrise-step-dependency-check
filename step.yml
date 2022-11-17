@@ -35,7 +35,6 @@ inputs:
       category: Debug
       title: Enable verbose logging
       summary: If this input is set, the Step will print additional logs for debugging.
-      is_required: true
       value_options:
       - "yes"
       - "no"
@@ -44,7 +43,6 @@ inputs:
       title: Cache vulnerabilty record?
       summary: If enabled, this step will automatically cache the downloaded vulnerability databases.
                This can greatly increase step performance as it can skip downloading in most cases.
-      is_required: true
       value_options:
       - "yes"
       - "no"
