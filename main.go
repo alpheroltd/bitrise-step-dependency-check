@@ -177,7 +177,7 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 		step.logger.Infof("Collecting dependency check vulnerability database")
 
 		dpCache := cache.New()
-		dpCache.IncludePath(config.VulnDatabasePath)
+		dpCache.IncludePath(dataPath)
 
 		if err := dpCache.Commit(); err != nil {
 			step.logger.Warnf("Cache collection skipped: %s", err)
