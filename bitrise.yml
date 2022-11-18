@@ -1,4 +1,4 @@
-format_version: 11
+format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: ""
 app:
@@ -25,7 +25,7 @@ workflows:
         - data_path: dependency-check-db-cache
         - project_name: Bitrise Step Dependency Check
         - scan_path: .
-        - debug: yes
+        - debug: true
         - output_path: reports
   share-this-step:
     description: |-
@@ -79,7 +79,7 @@ workflows:
         - path: ./_tmp
         - is_create_path: true
     - path::./:
-        title: Step Test
+        title: Run dependency check
         description: |-
           The example input has a default value,
           you can overwrite it if you want to, just like we did below,
@@ -87,12 +87,7 @@ workflows:
           file if you would not specify another value.
         run_if: "true"
         inputs:
-        - data_path: dependency-check-db-cache
-        - project_name: Bitrise Step Dependency Check
-        - scan_path: .
-        - debug: true
         - report_formats: HTML|SARIF
-        - output_path: reports
     - script:
         inputs:
         - content: |

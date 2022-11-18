@@ -26,28 +26,53 @@ deps:
     - name: dependency-check
 
 inputs:
-  - output_path: .
+  # Main inputs
+  - project_name:
     opts:
-      title: A path to write the reports
+      title: Project Name
+      summary: The name of the project being scanned
+  - scan_path: .
+    opts:
+      title: Scan Path
+      summary: A path pattern to scan for vulnerabilities
+      description: |-
+        Supports [ANT](https://ant.apache.org/manual/dirtasks.html) styled path patterns, eg `/src/**/*.java`
       is_required: true
-  - debug: "no"
+  - exclude_path:
     opts:
-      category: Debug
-      title: Enable verbose logging
-      summary: If this input is set, the Step will print additional logs for debugging.
-      value_options:
-      - "yes"
-      - "no"
-  - cache_database: "yes"
+      title: "Exclude path"
+      summary: A path pattern to exclude from the scan
+      description: |-
+        Supports [ANT](https://ant.apache.org/manual/dirtasks.html) styled path patterns, eg `/src/**/*.java`
+  - suppression_file:
     opts:
-      title: Cache vulnerabilty record?
-      summary: If enabled, this step will automatically cache the downloaded vulnerability databases.
-               This can greatly increase step performance as it can skip downloading in most cases.
+      title: Suppression File
+      summary: A path to any suppression file
+  - fail_on_cvss:
+    opts:
+      title: CVSS score threshold
+      summary: Fail if any vulnerability has a CVSS score equal or greater. Value must be between 0 and 10 (inclusively). If empty this behaviour is ignored
+      description: |-
+        Fail if any vulnerability has a CVSS score equal or greater. Value must be between 0 and 10 (inclusively). If empty this behaviour is ignored
+
+        After the analysis completes every identified vulnerabilty will likely have a [CVSS score](https://nvd.nist.gov/vuln-metrics/cvss)
+        This value is a threshold for analysis failure. If a vulnerability is found and is at least the specified then this step will fail.
+
+        Leave this empty if you do not want the step to ever fail.
+
+  # Category Config
+  - enable_experimetnal_analyzers: "yes"
+    opts:
+      category: Config
+      title: Enable Experimental Analyzers
+      summary: If `yes` the analysis will also use some [experimental analyzers](https://jeremylong.github.io/DependencyCheck/analyzers/index.html)
+      is_required: true
       value_options:
       - "yes"
       - "no"
   - data_path: /tmp/dependancy-check-cache
     opts:
+      category: Config
       title: "Database path"
       summary: A path to where all the downloaded vulnerability databases are stored
       description: |
@@ -57,24 +82,42 @@ inputs:
       is_expand: true
       is_dont_change_value: true
       is_required: false
-  - project_name:
+  # Category Outputs
+  - output_path: .
     opts:
-      title: "Project Name"
-  - scan_path: .
-    opts:
-      title: "Scan Path"
+      category: Output
+      title: A path to write the reports
       is_required: true
-  - suppression_file:
-    opts:
-      title: Suppression File
-      summary: A path to any suppression file
   - report_formats: "HTML"
     opts:
+      category: Output
       title: Report formats
-      summary: A '|' separated list of valid dependancy check report formats. "HTML" by default
+      summary: A `|` separated list of valid dependancy check report formats. Only accepts `HTML`, `XML`, `CSV`, `JSON`, `JUNIT`, `SARIF` values
+      is_required: true
+  - cache_database: "yes"
+    opts:
+      category: Output
+      title: Cache vulnerabilty databases?
+      summary: If `yes`, then the downloaded vulnerability databases will be added to the bitrise cache. Highly recommended to have on
+      value_options:
+      - "yes"
+      - "no"
+  # Category Debug
+  - debug: "no"
+    opts:
+      category: Debug
+      title: Enable verbose logging
+      summary: If this input is set, the Step will print additional logs for debugging.
+      value_options:
+      - "yes"
+      - "no"
   - extra_args:
     opts:
-      title: Define any more commands you would like to pass to the dependency check tool
+      category: Debug
+      title: Extra command arguments
+      description: |-
+        Add any more command line arguments you want to run the tool with from [this list](https://jeremylong.github.io/DependencyCheck/dependency-check-cli/arguments.html).
+        These args are appended to the end but cannot guarantee overriding any behaviour.
 
 outputs:
   - DEPENDENCY_CHECK_HTML_REPORT_PATH:

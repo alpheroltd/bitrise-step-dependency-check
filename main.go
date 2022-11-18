@@ -50,6 +50,9 @@ type Config struct {
 	ScanPath        string `env:"scan_path,required"`
 	SuppressionFile string `env:"suppression_file"`
 
+	FailOnCVSS                   string `env:"fail_on_cvss,range[0..10]"`
+	EnabledExperimentalAnalyzers bool   `env:"enable_experimetnal_analyzers"`
+
 	CacheVulnDatabase bool   `env:"cache_database"`
 	VulnDatabasePath  string `env:"data_path"`
 
@@ -57,12 +60,6 @@ type Config struct {
 }
 
 type RunOutput struct {
-	DEPENDENCY_CHECK_HTML_REPORT_PATH  string
-	DEPENDENCY_CHECK_XML_REPORT_PATH   string
-	DEPENDENCY_CHECK_CSV_REPORT_PATH   string
-	DEPENDENCY_CHECK_JSON_REPORT_PATH  string
-	DEPENDENCY_CHECK_JUnit_REPORT_PATH string
-	DEPENDENCY_CHECK_Sarif_REPORT_PATH string
 }
 
 type Step struct {
@@ -117,9 +114,17 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 	dpArgs.addArg("--project", config.ProjectName)
 	dpArgs.addArg("--scan", config.ScanPath)
 
-	dataPath, err := filepath.Abs(config.VulnDatabasePath)
+	if config.EnabledExperimentalAnalyzers {
+		dpArgs.addArg("--enableExperimental", config.FailOnCVSS)
+	}
+
+	if config.FailOnCVSS != "" {
+		dpArgs.addArg("--failOnCVSS", config.FailOnCVSS)
+	}
+
+	vulnDatabasePath, err := filepath.Abs(config.VulnDatabasePath)
 	if err == nil {
-		dpArgs.addArg("--data", dataPath)
+		dpArgs.addArg("--data", vulnDatabasePath)
 	} else {
 		step.logger.Errorf("Could not locate path to persist the vulnerability database. Error: %s", err)
 	}
@@ -150,8 +155,8 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 			}
 		}
 	} else {
-		dpArgs.addArg()
-		// return RunOutput{}, error
+		step.logger.Errorf("No report formats in input. The tool ")
+		os.Exit(1)
 	}
 
 	cmdOpts := command.Opts{
@@ -168,24 +173,14 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 
 	if err != nil {
 		step.logger.Errorf("Failed to expose output with envman, error: %#v", err)
+
+		// Always ensure we write the cache for future runs
+		step.TryWriteCache(config, vulnDatabasePath)
+
 		return RunOutput{}, err
 	}
 
-	// Create cache
-	if config.CacheVulnDatabase {
-		step.logger.Println()
-		step.logger.Infof("Collecting dependency check vulnerability database")
-
-		dpCache := cache.New()
-		dpCache.IncludePath(dataPath)
-
-		if err := dpCache.Commit(); err != nil {
-			step.logger.Warnf("Cache collection skipped: %s", err)
-		} else {
-			step.logger.Donef("Cache path added to $BITRISE_CACHE_INCLUDE_PATHS")
-			step.logger.Printf("Add '%s' step to upload the collected cache for the next build.", colorstring.Yellow("Bitrise.io Cache:Push"))
-		}
-	}
+	step.TryWriteCache(config, vulnDatabasePath)
 
 	for _, reportFormat := range reportFormats {
 		reportFilePath, _ := filepath.Abs(filepath.Join(outputDir, reportFormat.FileName))
@@ -196,22 +191,23 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 		}
 	}
 
-	//
-	// --- Step Outputs: Export Environment Variables for other Steps:
-	// You can export Environment Variables for other Steps with
-	//  envman, which is automatically installed by `bitrise setup`.
-	// A very simple example:
-
-	// You can find more usage examples on envman's GitHub page
-	//  at: https://github.com/bitrise-io/envman
-
-	//
-	// --- Exit codes:
-	// The exit code of your Step is very important. If you return
-	//  with a 0 exit code `bitrise` will register your Step as "successful".
-	// Any non zero exit code will be registered as "failed" by `bitrise`.
-	// os.Exit(0)
-
 	return RunOutput{}, nil
+}
 
+func (step Step) TryWriteCache(config Config, vulnDatabasePath string) {
+	// Create cache
+	if config.CacheVulnDatabase {
+		step.logger.Println()
+		step.logger.Infof("Collecting dependency check vulnerability database")
+
+		dpCache := cache.New()
+		dpCache.IncludePath(vulnDatabasePath)
+
+		if err := dpCache.Commit(); err != nil {
+			step.logger.Warnf("Cache collection skipped: %s", err)
+		} else {
+			step.logger.Donef("Cache path added to $BITRISE_CACHE_INCLUDE_PATHS")
+			step.logger.Printf("Add '%s' step to upload the collected cache for the next build.", colorstring.Yellow("Bitrise.io Cache:Push"))
+		}
+	}
 }
