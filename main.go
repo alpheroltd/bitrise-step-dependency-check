@@ -115,7 +115,7 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 	dpArgs.addArg("--scan", config.ScanPath)
 
 	if config.EnabledExperimentalAnalyzers {
-		dpArgs.addArg("--enableExperimental", config.FailOnCVSS)
+		dpArgs.addArg("--enableExperimental")
 	}
 
 	if config.FailOnCVSS != "" {
