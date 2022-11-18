@@ -122,6 +122,10 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 		dpArgs.addArg("--failOnCVSS", config.FailOnCVSS)
 	}
 
+	if config.SuppressionFile != "" {
+		dpArgs.addArg("--suppression", config.SuppressionFile)
+	}
+
 	vulnDatabasePath, err := filepath.Abs(config.VulnDatabasePath)
 	if err == nil {
 		dpArgs.addArg("--data", vulnDatabasePath)
