@@ -1,0 +1,5 @@
+bitrise-step-dependency-check
+
+Copyright (c) 2022 Alphero. All Rights Reserved.
+
+This product contains a logo derived from the [dependency-check](https://github.com/jeremylong/DependencyCheck) project by Jeremy Long.
