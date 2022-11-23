@@ -3,3 +3,6 @@
 _tmp/
 .vscode
 .idea
+
+# ignore bitrise stuff
+.bitrise*
