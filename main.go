@@ -51,6 +51,7 @@ type Config struct {
 	SuppressionFile string `env:"suppression_file"`
 
 	FailOnCVSS                   string `env:"fail_on_cvss,range[0..10]"`
+	FailStepIfVulnFound          bool   `env:"fail_step_if_vulnerability_found"`
 	EnabledExperimentalAnalyzers bool   `env:"enable_experimetnal_analyzers"`
 
 	CacheVulnDatabase bool   `env:"cache_database"`
@@ -91,10 +92,12 @@ func main() {
 
 	stepconf.Print(config)
 
-	_, runErr := step.RunStep(config)
+	exitCode, runErr := step.RunStep(config)
 	if runErr != nil {
 		step.logger.Errorf(runErr.Error())
 		os.Exit(1)
+	} else {
+		os.Exit(exitCode)
 	}
 
 }
@@ -107,7 +110,7 @@ func (dpArgs *DependencyCheckerArgs) addArg(value ...string) {
 	dpArgs.args = append(dpArgs.args, value...)
 }
 
-func (step Step) RunStep(config Config) (RunOutput, error) {
+func (step Step) RunStep(config Config) (int, error) {
 
 	var dpArgs = DependencyCheckerArgs{}
 
@@ -159,7 +162,7 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 			}
 		}
 	} else {
-		step.logger.Errorf("No report formats in input. The tool ")
+		step.logger.Errorf("No report formats in input")
 		os.Exit(1)
 	}
 
@@ -171,21 +174,19 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 	//.SetStdout(os.Stdout).SetStderr(os.Stderr)
 	cmd := step.commandFactory.Create("dependency-check", dpArgs.args, &cmdOpts)
 
-	step.logger.Infof("dependency-check %s", strings.Join(dpArgs.args, " "))
+	step.logger.Infof("Running dependency-check %s", strings.Join(dpArgs.args, " "))
 
-	err = cmd.Run()
+	exitCode, err := cmd.RunAndReturnExitCode()
 
 	if err != nil {
 		step.logger.Errorf("Failed to expose output with envman, error: %#v", err)
-
-		// Always ensure we write the cache for future runs
-		step.TryWriteCache(config, vulnDatabasePath)
-
-		return RunOutput{}, err
 	}
 
 	step.TryWriteCache(config, vulnDatabasePath)
 
+	// For every defined report format write to the output vars
+	// with the file path if the file exists.
+	// if the file doesn't exist then the value isn't written and will be empty when used
 	for _, reportFormat := range reportFormats {
 		reportFilePath, _ := filepath.Abs(filepath.Join(outputDir, reportFormat.FileName))
 		_, err := os.Stat(reportFilePath)
@@ -195,7 +196,11 @@ func (step Step) RunStep(config Config) (RunOutput, error) {
 		}
 	}
 
-	return RunOutput{}, nil
+	if config.FailStepIfVulnFound {
+		return exitCode, nil
+	} else {
+		return 0, nil
+	}
 }
 
 func (step Step) TryWriteCache(config Config, vulnDatabasePath string) {

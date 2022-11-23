@@ -88,6 +88,14 @@ inputs:
       category: Output
       title: A path to write the reports
       is_required: true
+  - fail_step_if_vulnerability_found: "yes"
+    opts:
+      category: Output
+      title: Fail step if vulnerabilities are found
+      summary: If `yes`, this step will fail if the dependency check scan found a vulnerability that is at least the CVSS score threshold. If `no`, this step will pass unless a runtime error occurred.
+      value_options:
+      - "yes"
+      - "no"
   - report_formats: "HTML"
     opts:
       category: Output
