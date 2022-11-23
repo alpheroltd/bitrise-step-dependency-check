@@ -128,6 +128,14 @@ inputs:
         These args are appended to the end but cannot guarantee overriding any behaviour.
 
 outputs:
+  - DEPENDENCY_CHECK_RESULT:
+    opts:
+      title: Dependency check result
+      summary: A string representing the result of the dependency analysis. Either `PASS` or `FAIL`
+      description: |-
+        Represents either the pass or fail result of the dependency check tool. 
+        The value will be `PASS` if the tool found no vulnerabilities, `FAIL` if one or more were found, or empty if something went wrong. 
+        This value can be `FAIL` even if `fail_step_if_vulnerability_found` is set to `no`.
   - DEPENDENCY_CHECK_HTML_REPORT_PATH:
     opts:
       title: HTML report

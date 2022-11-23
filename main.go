@@ -95,8 +95,14 @@ func main() {
 	exitCode, runErr := step.RunStep(config)
 	if runErr != nil {
 		step.logger.Errorf(runErr.Error())
+		tools.ExportEnvironmentWithEnvman("DEPENDENCY_CHECK_RESULT", "FAIL")
 		os.Exit(1)
 	} else {
+		if exitCode == 0 {
+			tools.ExportEnvironmentWithEnvman("DEPENDENCY_CHECK_RESULT", "PASS")
+		} else if exitCode == 1 {
+			tools.ExportEnvironmentWithEnvman("DEPENDENCY_CHECK_RESULT", "FAIL")
+		}
 		os.Exit(exitCode)
 	}
 
@@ -163,7 +169,7 @@ func (step Step) RunStep(config Config) (int, error) {
 		}
 	} else {
 		step.logger.Errorf("No report formats in input")
-		os.Exit(1)
+		return 2, nil
 	}
 
 	cmdOpts := command.Opts{
