@@ -1,4 +1,4 @@
-module gitlab.com/connor13/bitrise-step-dependency-check
+module github.com/alpheroltd/bitrise-step-dependency-check
 
 go 1.19
 

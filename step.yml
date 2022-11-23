@@ -10,16 +10,16 @@
 title: "Dependency Check"
 summary: "A wrapper for the OWASP dependency check tool"
 description: "Statically analyses a codebase and its dependencies for potential security vulnerabilities"
-website: https://gitlab.com/connor13/bitrise-step-dependency-check
-source_code_url: https://gitlab.com/connor13/bitrise-step-dependency-check
-support_url: https://gitlab.com/connor13/bitrise-step-dependency-check
+website: https://github.com/alpheroltd/bitrise-step-dependency-check
+source_code_url: https://github.com/alpheroltd/bitrise-step-dependency-check
+support_url: https://github.com/alpheroltd/bitrise-step-dependency-check
 
 type_tags:
   - utility
 
 toolkit:
   go:
-    package_name: gitlab.com/connor13/bitrise-step-dependency-check
+    package_name: github.com/alpheroltd/bitrise-step-dependency-check
     
 deps:
   brew:
@@ -83,7 +83,7 @@ inputs:
       is_dont_change_value: true
       is_required: false
   # Category Outputs
-  - output_path: .
+  - output_path: "$BITRISE_DEPLOY_DIR"
     opts:
       category: Output
       title: A path to write the reports
