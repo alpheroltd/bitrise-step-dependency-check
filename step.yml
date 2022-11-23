@@ -12,7 +12,7 @@ summary: "A wrapper for the OWASP dependency check tool"
 description: "Statically analyses a codebase and its dependencies for potential security vulnerabilities"
 website: https://github.com/alpheroltd/bitrise-step-dependency-check
 source_code_url: https://github.com/alpheroltd/bitrise-step-dependency-check
-support_url: https://github.com/alpheroltd/bitrise-step-dependency-check
+support_url: https://github.com/alpheroltd/bitrise-step-dependency-check/issues
 
 type_tags:
   - utility
