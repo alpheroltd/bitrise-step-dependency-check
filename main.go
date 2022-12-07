@@ -64,6 +64,7 @@ type RunOutput struct {
 }
 
 type Step struct {
+	envRepository  env.Repository
 	commandFactory command.Factory
 	inputParser    stepconf.InputParser
 	logger         log.Logger
@@ -78,6 +79,7 @@ func main() {
 
 	// this steps runtime state
 	step := Step{
+		envRepository:  envRepository,
 		commandFactory: command.NewFactory(envRepository),
 		inputParser:    stepconf.NewInputParser(envRepository),
 		logger:         log.NewLogger(),
@@ -172,13 +174,17 @@ func (step Step) RunStep(config Config) (int, error) {
 		return 2, nil
 	}
 
+	stepSourceDir, err := filepath.Abs(step.envRepository.Get("BITRISE_STEP_SOURCE_DIR"))
+	if err != nil {
+		return 3, nil
+	}
+	toolPath := filepath.Join(stepSourceDir, "dependency-check", "bin", "dependency-check.sh")
+
 	cmdOpts := command.Opts{
 		Stdout: os.Stdout,
 		Stderr: os.Stderr,
 	}
-
-	//.SetStdout(os.Stdout).SetStderr(os.Stderr)
-	cmd := step.commandFactory.Create("dependency-check", dpArgs.args, &cmdOpts)
+	cmd := step.commandFactory.Create(toolPath, dpArgs.args, &cmdOpts)
 
 	step.logger.Infof("Running dependency-check %s", strings.Join(dpArgs.args, " "))
 
@@ -198,7 +204,7 @@ func (step Step) RunStep(config Config) (int, error) {
 		_, err := os.Stat(reportFilePath)
 		if err == nil {
 			step.logger.Infof("%s report is now available in the environment variable %s", reportFormat.ReportType, reportFormat.OutputEnvVar)
-			tools.ExportEnvironmentWithEnvman(reportFormat.OutputEnvVar, reportFilePath)
+			step.envRepository.Set(reportFormat.OutputEnvVar, reportFilePath)
 		}
 	}
 

@@ -20,10 +20,6 @@ type_tags:
 toolkit:
   go:
     package_name: github.com/alpheroltd/bitrise-step-dependency-check
-    
-deps:
-  brew:
-    - name: dependency-check
 
 inputs:
   # Main inputs
