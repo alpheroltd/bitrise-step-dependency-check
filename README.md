@@ -1,4 +1,4 @@
-# Dependency Check
+# OWASP Dependency Check
 
 Runs the [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/) tool to identify depepdancies and potential security vulnerabilities.
 

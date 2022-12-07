@@ -7,7 +7,7 @@
 # - Bitrise docs: http://devcenter.bitrise.io/
 # - Bitrise CLI guides: http://devcenter.bitrise.io/bitrise-cli/
 
-title: "Dependency Check"
+title: OWASP Dependency Check
 summary: "A wrapper for the OWASP dependency check tool"
 description: "Statically analyses a codebase and its dependencies for potential security vulnerabilities"
 website: https://github.com/alpheroltd/bitrise-step-dependency-check
@@ -74,11 +74,7 @@ inputs:
     opts:
       category: Config
       title: "Database path"
-      summary: A path to where all the downloaded vulnerability databases are stored
-      description: |
-        Description of this input.
-
-        Can be Markdown formatted text.
+      summary: A path to where all the downloaded vulnerability databases are stored                
       is_expand: true
       is_dont_change_value: true
       is_required: false
