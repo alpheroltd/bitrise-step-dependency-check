@@ -19,7 +19,7 @@ github.com/bitrise-io/go-utils/v2/log/colorstring
 ## explicit; go 1.18
 golang.org/x/exp/constraints
 golang.org/x/exp/slices
-# golang.org/x/text v0.3.7
+# golang.org/x/text v0.3.8
 ## explicit; go 1.17
 golang.org/x/text/cases
 golang.org/x/text/internal
